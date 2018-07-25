@@ -1,6 +1,6 @@
 <?php
 
-namespace Magenest\EmailNotification\Config\Backend;
+namespace Magenest\EmailNotifications\Config\Backend;
 
 use Magento\Framework\App\Cache\TypeListInterface;
 use Magento\Framework\App\Config\ScopeConfigInterface;
@@ -72,10 +72,10 @@ class Status extends ConfigValue
     protected function _afterLoad()
     {
         /** @var string $value */
-        $value = $this->getValue();
-        if (false !== $value) {
-            $decodedValue = $this->serializer->unserialize($value);
-        }
-        $this->setValue($decodedValue);
+//    $value = $this->getValue();
+//        if (false !== $value) {
+//         $decodedValue = $this->serializer->unserialize($value);
+//      }
+//      $this->setValue($decodedValue);
     }
 }

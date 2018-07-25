@@ -2,37 +2,12 @@
 namespace Magenest\EmailNotifications\Observer\NewOrder;
 
 use Magenest\EmailNotifications\Observer\Email\Email;
-
+use Magento\Framework\Event\Observer;
 class NewOrder extends Email
 {
-    protected $_logger;
+
     
-    protected $_coreRegistry;
 
-    protected $_scopeConfig;
-
-    protected $_transportBuilder;
-
-    protected $_storeManager;
-
-    protected $_orderFactory;
-    
-    public function __construct(
-        LoggerInterface $loggerInterface,
-        \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig,
-        \Magento\Framework\Mail\Template\TransportBuilder $transportBuilder,
-        \Magento\Store\Model\StoreManagerInterface $storeManager,
-        Registry $registry,
-        \Magento\Sales\Model\OrderFactory $orderFactory
-    ) {
-
-        $this->_logger = $loggerInterface;
-        $this->_scopeConfig = $scopeConfig;
-        $this->_coreRegistry = $registry;
-        $this->_transportBuilder = $transportBuilder;
-        $this->_storeManager = $storeManager;
-        $this->_orderFactory = $orderFactory;
-    }
 
     public function execute(Observer $observer)
     {
