@@ -10,37 +10,35 @@ namespace Magenest\EmailNotifications\Observer\NewReview;
 
 
 use Magenest\EmailNotifications\Observer\Email\Email;
+use Magento\Framework\Event\Observer;
 
 class NewReview extends Email
 {
-
-
+    CONST Review = "review";
+    CONST RV_Enable = "rv_enable";
+    CONST RV_Receive = "rv_receive";
+    CONST RV_Template = "rv_template";
+    CONST Email_sender = "email_sender";
     public function execute(Observer $observer)
     {
         $reviewId = $observer->getObject()->getId();
 
         /** @var \Magento\Review\Model\Review $reviewModel */
-        $reviewModel = $this->_reviewFactory->create();
 
-        $detail =  $reviewModel->load($reviewId)->getDetail();
-        $title = $reviewModel->load($reviewId)->getTitle();
-        $productId = $reviewModel->load($reviewId)->getEntityPkValue();
-        $nickname = $reviewModel->load($reviewId)->getNickname();
 
         $enable = $this->_scopeConfig->getValue(
-            'emailnotifications_config/config_group_new_review/config_new_review_enable',
+            self::RV_Enable,
             \Magento\Store\Model\ScopeInterface::SCOPE_STORE
         );
         if ($enable == 'yes') {
             $receiverList = $this->_scopeConfig->getValue(
-                'emailnotifications_config/config_group_new_review/config_new_review_receiver',
+                self::RV_Receive,
                 \Magento\Store\Model\ScopeInterface::SCOPE_STORE
             );
-//            $receiverEmails =explode(';', $receiverList);
             foreach ($receiverList as $receiverEmail) {
                 try {
                     $template_id = $this->_scopeConfig->getValue(
-                        'emailnotifications_config/config_group_new_review/config_new_review_template',
+                        self::RV_Template,
                         \Magento\Store\Model\ScopeInterface::SCOPE_STORE
                     );
 
@@ -51,15 +49,11 @@ class NewReview extends Email
                         ]
                     )->setTemplateVars(
                         [
-                            'nickname' => $nickname,
-                            'productId' => $productId,
-                            'store' => $this->_storeManager->getStore(),
-                            'title' => $title,
-                            'detail' => $detail
+                           self::Review
                         ]
                     )->setFrom(
                         $this->_scopeConfig->getValue(
-                            'emailnotifications_config/config_group_email_sender/config_email_sender',
+                            self::Email_sender,
                             \Magento\Store\Model\ScopeInterface::SCOPE_STORE
                         )
                     )->addTo(

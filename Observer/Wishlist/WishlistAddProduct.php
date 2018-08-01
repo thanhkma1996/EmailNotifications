@@ -3,32 +3,30 @@ namespace Magenest\EmailNotifications\Observer\Wishlist;
 
 
 use Magenest\EmailNotifications\Observer\Email\Email;
+use Magento\Framework\Event\Observer;
 
 class WishlistAddProduct extends Email
 {
-
+    CONST Addwishlist = "addwish";
+    CONST Wishlist_enable = "wishlist_enable";
+    CONST Wishlist_receiver = "wishlist_receiver";
+    CONST Wishlist_template = "wishlist_template";
+    CONST Email_sender="email_sender";
     public function execute(Observer $observer)
     {
-        $productName = $observer->getEvent()->getProduct()->getName();
-        $customerId = $observer->getEvent()->getWishlist()->getCustomerId();
-        /** @var \Magento\Customer\Model\Customer $customerModel */
-        $customer = $this->_customerFactory->create()->load($customerId);
-        $customerName = $customer->getName();
-        $customerEmail = $customer->getEmail();
         $enable = $this->_scopeConfig->getValue(
-            'emailnotifications_config/config_group_new_wishlist/config_new_wishlist_enable',
+            self::Wishlist_enable,
             \Magento\Store\Model\ScopeInterface::SCOPE_STORE
         );
         if ($enable == 'yes') {
             $receiverList = $this->_scopeConfig->getValue(
-                'emailnotifications_config/config_group_new_wishlist/config_new_wishlist_receiver',
+                self::Wishlist_receiver,
                 \Magento\Store\Model\ScopeInterface::SCOPE_STORE
             );
-//            $receiverEmails =explode(';', $receiverList);
             foreach ($receiverList as $receiverEmail) {
                 try {
                     $template_id = $this->_scopeConfig->getValue(
-                        'emailnotifications_config/config_group_new_wishlist/config_new_wishlist_template',
+                        self::Wishlist_template,
                         \Magento\Store\Model\ScopeInterface::SCOPE_STORE
                     );
 
@@ -39,14 +37,11 @@ class WishlistAddProduct extends Email
                         ]
                     )->setTemplateVars(
                         [
-                            'customerName' => $customerName,
-                            'customerEmail' => $customerEmail,
-                            'productName' => $productName,
-                            'store' => $this->_storeManager->getStore()
+                           self::Addwishlist
                         ]
                     )->setFrom(
                         $this->_scopeConfig->getValue(
-                            'emailnotifications_config/config_group_email_sender/config_email_sender',
+                            self::Email_sender,
                             \Magento\Store\Model\ScopeInterface::SCOPE_STORE
                         )
                     )->addTo(

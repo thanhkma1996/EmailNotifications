@@ -6,35 +6,41 @@ use Magento\Framework\Event\Observer;
 class NewOrder extends Email
 {
 
-    
-
-
+    CONST Order_code = "order_code";
+    CONST Coupon_order = "coupon_order";
+    CONST Order = "order";
+    CONST Coupon = "coupon";
+    CONST Coupon_receive = "coupon_receive";
+    CONST Coupon_template = "coupon_template";
+    CONST Coupon_sender = "coupon_sender";
+    CONST Order_sender = "order_sender";
+    CONST Order_template = "order_template";
+    CONST Email_sender = "email_sender";
     public function execute(Observer $observer)
     {
-        $orderId=$observer->getEvent()->getOrder()->getId();
+        $orderId = $observer->getEvent()->getOrder()->getId();
         /** @var \Magento\Sales\Model\Order $orderModel */
-        $orderModel = $this->_orderFactory->create();
         $order = $orderModel->load($orderId);
-        $createdAt = $order->getCreatedAt();
         $couponCode = $order->getCouponCode();
+
         $enable = $this->_scopeConfig->getValue(
-            'emailnotifications_config/config_group_new_order/config_new_order_enable',
+            self::Order,
             \Magento\Store\Model\ScopeInterface::SCOPE_STORE
         );
+
         $enableCoupon = $this->_scopeConfig->getValue(
-            'emailnotifications_config/config_group_new_coupon/config_new_coupon_enable',
+            self::Coupon,
             \Magento\Store\Model\ScopeInterface::SCOPE_STORE
         );
         if ($enableCoupon == 'yes' && $couponCode) {
             $receiverList = $this->_scopeConfig->getValue(
-                'emailnotifications_config/config_group_new_coupon/config_new_coupon_receiver',
+                self::Coupon_receive,
                 \Magento\Store\Model\ScopeInterface::SCOPE_STORE
             );
-//            $receiverEmails =explode(';', $receiverList);
             foreach ($receiverList as $receiverEmail) {
                 try {
                     $template_id = $this->_scopeConfig->getValue(
-                        'emailnotifications_config/config_group_new_coupon/config_new_coupon_template',
+                        self::Coupon_template,
                         \Magento\Store\Model\ScopeInterface::SCOPE_STORE
                     );
 
@@ -45,13 +51,11 @@ class NewOrder extends Email
                         ]
                     )->setTemplateVars(
                         [
-                            'orderId' => $orderModel->load($orderId)->getIncrementId(),
-                            'created_at' => $createdAt,
-                            'coupon_code' => $couponCode
+                            self::Order_code
                         ]
                     )->setFrom(
                         $this->_scopeConfig->getValue(
-                            'emailnotifications_config/config_group_email_sender/config_email_sender',
+                            self::Coupon_sender,
                             \Magento\Store\Model\ScopeInterface::SCOPE_STORE
                         )
                     )->addTo(
@@ -66,14 +70,13 @@ class NewOrder extends Email
 
         if ($enable == 'yes') {
             $receiverList = $this->_scopeConfig->getValue(
-                'emailnotifications_config/config_group_new_order/config_new_order_receiver',
+              self::Order_sender,
                 \Magento\Store\Model\ScopeInterface::SCOPE_STORE
             );
-//            $receiverEmails = explode(';', $receiverList);
             foreach ($receiverList as $receiverEmail) {
                 try {
                     $template_id = $this->_scopeConfig->getValue(
-                        'emailnotifications_config/config_group_new_order/config_new_order_template',
+                       self::Order_template,
                         \Magento\Store\Model\ScopeInterface::SCOPE_STORE
                     );
 
@@ -84,12 +87,11 @@ class NewOrder extends Email
                         ]
                     )->setTemplateVars(
                         [
-                            'orderId' => $orderModel->load($orderId)->getIncrementId(),
-                            'created_at' => $createdAt,
+                            self::Coupon_order
                         ]
                     )->setFrom(
                         $this->_scopeConfig->getValue(
-                            'emailnotifications_config/config_group_email_sender/config_email_sender',
+                            self::Email_sender,
                             \Magento\Store\Model\ScopeInterface::SCOPE_STORE
                         )
                     )->addTo(

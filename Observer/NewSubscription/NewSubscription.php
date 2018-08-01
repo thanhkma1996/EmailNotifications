@@ -4,34 +4,39 @@ namespace Magenest\EmailNotifications\Observer\NewSubscription;
 
 
 use Magenest\EmailNotifications\Observer\Email\Email;
+use Magento\Framework\Event\Observer;
 
 class NewSubscription extends Email
 {
-
+        CONST Sub_customer = "sub_customer";
+        CONST Unsub_customer = "unsub_customer";
+        CONST Sub_enable = "sub_enable";
+        CONST Sub_receiver = "sub_receiver";
+        CONST Sub_template = "sub_template";
+        CONST Email_sender = "email_sender";
+        CONST Unsub_enable = "unsub_enable";
+        CONST Unsub_receiver = "unsub_receiver";
+        CONST Unsub_template = "unsub_temlate";
     public function execute(Observer $observer)
     {
         /** @var \Magento\Newsletter\Model\Subscriber $subscriber */
         $subscriber = $observer->getEvent()->getSubscriber();
         $status = $subscriber->getStatus();
         $isStatusChanged =$subscriber->isStatusChanged();
-        $customerId = $subscriber->getCustomerId();
-        $customer = $this->_customerFactory->create()->load($customerId);
-        $customerName = $customer->getName();
-        $customerEmail = $customer->getEmail();
+
         $enable = $this->_scopeConfig->getValue(
-            'emailnotifications_config/config_group_new_subscription/config_new_subscription_enable',
+            self::Sub_enable,
             \Magento\Store\Model\ScopeInterface::SCOPE_STORE
         );
         if ($enable == 'yes' && $status == 1 && $isStatusChanged == true) {
             $receiverList = $this->_scopeConfig->getValue(
-                'emailnotifications_config/config_group_new_subscription/config_new_subscription_receiver',
+                self::Sub_receiver,
                 \Magento\Store\Model\ScopeInterface::SCOPE_STORE
             );
-//            $receiverEmails =explode(';', $receiverList);
             foreach ($receiverList as $receiverEmail) {
                 try {
                     $template_id = $this->_scopeConfig->getValue(
-                        'emailnotifications_config/config_group_new_subscription/config_new_subscription_template',
+                        self::Sub_template,
                         \Magento\Store\Model\ScopeInterface::SCOPE_STORE
                     );
                     $transport = $this->_transportBuilder->setTemplateIdentifier($template_id)->setTemplateOptions(
@@ -41,12 +46,11 @@ class NewSubscription extends Email
                         ]
                     )->setTemplateVars(
                         [
-                            'customerName' => $customerName,
-                            'customerEmail' => $customerEmail,
+                           self::Sub_customer
                         ]
                     )->setFrom(
                         $this->_scopeConfig->getValue(
-                            'emailnotifications_config/config_group_email_sender/config_email_sender',
+                            self::Email_sender,
                             \Magento\Store\Model\ScopeInterface::SCOPE_STORE
                         )
                     )->addTo(
@@ -59,19 +63,18 @@ class NewSubscription extends Email
             }
         }
         $enableUnsubscribe = $this->_scopeConfig->getValue(
-            'emailnotifications_config/config_group_new_unsubscription/config_new_unsubscription_enable',
+            self::Unsub_enable,
             \Magento\Store\Model\ScopeInterface::SCOPE_STORE
         );
         if ($enableUnsubscribe == 'yes' && $status == 3 && $isStatusChanged == true) {
             $receiverList = $this->_scopeConfig->getValue(
-                'emailnotifications_config/config_group_new_unsubscription/config_new_unsubscription_receiver',
+                self::Unsub_receiver,
                 \Magento\Store\Model\ScopeInterface::SCOPE_STORE
             );
-//            $receiverEmails =explode(';', $receiverList);
             foreach ($receiverList as $receiverEmail) {
                 try {
                     $template_id = $this->_scopeConfig->getValue(
-                        'emailnotifications_config/config_group_new_unsubscription/config_new_unsubscription_template',
+                        self::Unsub_template,
                         \Magento\Store\Model\ScopeInterface::SCOPE_STORE
                     );
                     $transport = $this->_transportBuilder->setTemplateIdentifier($template_id)->setTemplateOptions(
@@ -81,12 +84,11 @@ class NewSubscription extends Email
                         ]
                     )->setTemplateVars(
                         [
-                            'customerName' => $customerName,
-                            'customerEmail' => $customerEmail,
+                           self::Unsub_customer
                         ]
                     )->setFrom(
                         $this->_scopeConfig->getValue(
-                            'emailnotifications_config/config_group_email_sender/config_email_sender',
+                            self::Email_sender,
                             \Magento\Store\Model\ScopeInterface::SCOPE_STORE
                         )
                     )->addTo(

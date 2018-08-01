@@ -4,29 +4,33 @@ namespace Magenest\EmailNotifications\Observer\NewRegistration;
 
 
 use Magenest\EmailNotifications\Observer\Email\Email;
+use Magento\Framework\Event\Observer;
+
 
 class NewRegistration extends  Email
 {
-
+    CONST Reg_Customer = "regis_customer";
+    CONST Enable = "reg_enable";
+    CONST Receive = "reg_receive";
+    CONST Template = "reg_template";
+    CONST Email_sender = "email_sender";
     public function execute(Observer $observer)
     {
         $enable = $this->_scopeConfig->getValue(
-            'emailnotifications_config/config_group_new_registration/config_new_registration_enable',
+           self::Enable,
             \Magento\Store\Model\ScopeInterface::SCOPE_STORE
         );
         if ($enable == 'yes') {
             $receiverList = $this->_scopeConfig->getValue(
-                'emailnotifications_config/config_group_new_registration/config_new_registration_receiver',
+                self::Receive,
                 \Magento\Store\Model\ScopeInterface::SCOPE_STORE
             );
-//            $receiverEmails = explode(';', $receiverList);
             foreach ($receiverList as $receiverEmail) {
                 try {
                     $template_id = $this->_scopeConfig->getValue(
-                        'emailnotifications_config/config_group_new_registration/config_new_registration_template',
+                        self::Template,
                         \Magento\Store\Model\ScopeInterface::SCOPE_STORE
                     );
-                    $customer_name = $observer->getEvent()->getCustomer()->getFirstname() . ' ' . $observer->getEvent()->getCustomer()->getLastname();
                     $transport = $this->_transportBuilder->setTemplateIdentifier($template_id)->setTemplateOptions(
                         [
                             'area' => \Magento\Framework\App\Area::AREA_FRONTEND,
@@ -34,12 +38,11 @@ class NewRegistration extends  Email
                         ]
                     )->setTemplateVars(
                         [
-                            'customerName' => $customer_name,
-                            'customerEmail' => $observer->getEvent()->getCustomer()->getEmail()
+                            self::Reg_Customer
                         ]
                     )->setFrom(
                         $this->_scopeConfig->getValue(
-                            'emailnotifications_config/config_group_email_sender/config_email_sender',
+                            self::Email_sender,
                             \Magento\Store\Model\ScopeInterface::SCOPE_STORE
                         )
                     )->addTo(

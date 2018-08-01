@@ -13,6 +13,7 @@ class Status extends AbstractFieldArray
      * @var OrderStatus
      */
     protected $_orderStatusRenderer;
+//    protected $_TemplateRenderer;
 
     /**
      * @return OrderStatus|\Magento\Framework\View\Element\BlockInterface
@@ -31,11 +32,14 @@ class Status extends AbstractFieldArray
         return $this->_orderStatusRenderer;
     }
 
+//
+
     /**
      * @throws \Magento\Framework\Exception\LocalizedException
      */
     protected function _prepareToRender()
     {
+//        $this->addColumn('temple', ['label' => __('Temple'),'size'=>'3000px', 'class' => 'required-entry', 'renderer' => $this->_getTemplateRenderer()]);
         $this->addColumn('changeform', ['label' => __('change from'),'size'=>'3000px', 'class' => 'required-entry', 'renderer' => $this->_getStatusRenderer()]);
         $this->addColumn('changeto', ['label' => __('change to'),'size'=>'3000px', 'class' => 'required-entry', 'renderer' => $this->_getStatusRenderer()]);
         $this->addColumn('email',['label' => __('Email'),'size'=>'3000px', 'class' => 'required-entry validate-email']);
