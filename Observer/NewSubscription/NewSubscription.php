@@ -10,7 +10,6 @@ class NewSubscription extends Email
 {
         CONST Sub_customer = "sub_customer";
         CONST Unsub_customer = "unsub_customer";
-        CONST Sub_enable = "sub_enable";
         CONST Sub_receiver = "sub_receiver";
         CONST Sub_template = "sub_template";
         CONST Email_sender = "email_sender";
@@ -20,15 +19,7 @@ class NewSubscription extends Email
     public function execute(Observer $observer)
     {
         /** @var \Magento\Newsletter\Model\Subscriber $subscriber */
-        $subscriber = $observer->getEvent()->getSubscriber();
-        $status = $subscriber->getStatus();
-        $isStatusChanged =$subscriber->isStatusChanged();
 
-        $enable = $this->_scopeConfig->getValue(
-            self::Sub_enable,
-            \Magento\Store\Model\ScopeInterface::SCOPE_STORE
-        );
-        if ($enable == 'yes' && $status == 1 && $isStatusChanged == true) {
             $receiverList = $this->_scopeConfig->getValue(
                 self::Sub_receiver,
                 \Magento\Store\Model\ScopeInterface::SCOPE_STORE
@@ -61,12 +52,7 @@ class NewSubscription extends Email
                     $this->_logger->critical($e);
                 }
             }
-        }
-        $enableUnsubscribe = $this->_scopeConfig->getValue(
-            self::Unsub_enable,
-            \Magento\Store\Model\ScopeInterface::SCOPE_STORE
-        );
-        if ($enableUnsubscribe == 'yes' && $status == 3 && $isStatusChanged == true) {
+
             $receiverList = $this->_scopeConfig->getValue(
                 self::Unsub_receiver,
                 \Magento\Store\Model\ScopeInterface::SCOPE_STORE
@@ -100,5 +86,5 @@ class NewSubscription extends Email
                 }
             }
         }
-    }
+
 }

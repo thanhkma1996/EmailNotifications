@@ -18,26 +18,12 @@ class NewOrder extends Email
     CONST Email_sender = "email_sender";
     public function execute(Observer $observer)
     {
-        $orderId = $observer->getEvent()->getOrder()->getId();
         /** @var \Magento\Sales\Model\Order $orderModel */
-        $order = $orderModel->load($orderId);
-        $couponCode = $order->getCouponCode();
 
-        $enable = $this->_scopeConfig->getValue(
-            self::Order,
-            \Magento\Store\Model\ScopeInterface::SCOPE_STORE
-        );
-
-        $enableCoupon = $this->_scopeConfig->getValue(
-            self::Coupon,
-            \Magento\Store\Model\ScopeInterface::SCOPE_STORE
-        );
-        if ($enableCoupon == 'yes' && $couponCode) {
             $receiverList = $this->_scopeConfig->getValue(
                 self::Coupon_receive,
                 \Magento\Store\Model\ScopeInterface::SCOPE_STORE
             );
-            foreach ($receiverList as $receiverEmail) {
                 try {
                     $template_id = $this->_scopeConfig->getValue(
                         self::Coupon_template,
@@ -58,22 +44,17 @@ class NewOrder extends Email
                             self::Coupon_sender,
                             \Magento\Store\Model\ScopeInterface::SCOPE_STORE
                         )
-                    )->addTo(
-                        $receiverEmail
-                    )->getTransport();
+                    )->addTo($receiverList)->getTransport();
                     $transport->sendMessage();
                 } catch (\Magento\Framework\Exception\LocalizedException $e) {
                     $this->_logger->critical($e);
                 }
-            }
-        }
 
-        if ($enable == 'yes') {
+
             $receiverList = $this->_scopeConfig->getValue(
               self::Order_sender,
                 \Magento\Store\Model\ScopeInterface::SCOPE_STORE
             );
-            foreach ($receiverList as $receiverEmail) {
                 try {
                     $template_id = $this->_scopeConfig->getValue(
                        self::Order_template,
@@ -87,21 +68,18 @@ class NewOrder extends Email
                         ]
                     )->setTemplateVars(
                         [
-                            self::Coupon_order
+                            self::Coupon_order,
                         ]
                     )->setFrom(
                         $this->_scopeConfig->getValue(
                             self::Email_sender,
                             \Magento\Store\Model\ScopeInterface::SCOPE_STORE
                         )
-                    )->addTo(
-                        $receiverEmail
-                    )->getTransport();
+                    )->addTo($receiverList)->getTransport();
                     $transport->sendMessage();
                 } catch (\Magento\Framework\Exception\LocalizedException $e) {
                     $this->_logger->critical($e);
                 }
             }
-        }
-    }
+
 }

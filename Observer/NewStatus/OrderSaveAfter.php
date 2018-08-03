@@ -56,6 +56,7 @@ class OrderSaveAfter extends Email
                             'updated_at' => $order->getUpdatedAt(),
                             'statebefore' => $from,
                             'stateafter' => $to
+
                         ]
                     )->setFrom(
                         $this->_scopeConfig->getValue(

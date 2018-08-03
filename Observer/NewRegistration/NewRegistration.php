@@ -10,17 +10,12 @@ use Magento\Framework\Event\Observer;
 class NewRegistration extends  Email
 {
     CONST Reg_Customer = "regis_customer";
-    CONST Enable = "reg_enable";
     CONST Receive = "reg_receive";
     CONST Template = "reg_template";
     CONST Email_sender = "email_sender";
     public function execute(Observer $observer)
     {
-        $enable = $this->_scopeConfig->getValue(
-           self::Enable,
-            \Magento\Store\Model\ScopeInterface::SCOPE_STORE
-        );
-        if ($enable == 'yes') {
+
             $receiverList = $this->_scopeConfig->getValue(
                 self::Receive,
                 \Magento\Store\Model\ScopeInterface::SCOPE_STORE
@@ -54,5 +49,4 @@ class NewRegistration extends  Email
                 }
             }
         }
-    }
 }

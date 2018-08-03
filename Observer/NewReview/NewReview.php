@@ -15,7 +15,6 @@ use Magento\Framework\Event\Observer;
 class NewReview extends Email
 {
     CONST Review = "review";
-    CONST RV_Enable = "rv_enable";
     CONST RV_Receive = "rv_receive";
     CONST RV_Template = "rv_template";
     CONST Email_sender = "email_sender";
@@ -26,16 +25,11 @@ class NewReview extends Email
         /** @var \Magento\Review\Model\Review $reviewModel */
 
 
-        $enable = $this->_scopeConfig->getValue(
-            self::RV_Enable,
-            \Magento\Store\Model\ScopeInterface::SCOPE_STORE
-        );
-        if ($enable == 'yes') {
+
             $receiverList = $this->_scopeConfig->getValue(
                 self::RV_Receive,
                 \Magento\Store\Model\ScopeInterface::SCOPE_STORE
             );
-            foreach ($receiverList as $receiverEmail) {
                 try {
                     $template_id = $this->_scopeConfig->getValue(
                         self::RV_Template,
@@ -49,7 +43,7 @@ class NewReview extends Email
                         ]
                     )->setTemplateVars(
                         [
-                           self::Review
+                           self::Review,
                         ]
                     )->setFrom(
                         $this->_scopeConfig->getValue(
@@ -57,13 +51,12 @@ class NewReview extends Email
                             \Magento\Store\Model\ScopeInterface::SCOPE_STORE
                         )
                     )->addTo(
-                        $receiverEmail
+                        $receiverList
                     )->getTransport();
                     $transport->sendMessage();
                 } catch (\Magento\Framework\Exception\LocalizedException $e) {
                     $this->_logger->critical($e);
                 }
             }
-        }
-    }
+
 }
