@@ -18,17 +18,14 @@
 
             <group id="config_group_email_sender" translate="label" type="text" sortOrder="10" showInDefault="1" showInWebsite="0" showInStore="1">
                 <label>Email sender</label>
-                <fieldset_css>admin-email-custom-css</fieldset_css>
                 <field id="config_email_sender" translate="label comment" type="select" sortOrder="20" showInDefault="1" showInWebsite="0" showInStore="1">
                     <label>Email Sender</label>
-                    <attribute type="class">11</attribute>
                     <source_model>Magento\Config\Model\Config\Source\Email\Identity</source_model>
                 </field>
             </group>
 
             <group id="config_group_new_order" translate="label" type="text" sortOrder="30" showInDefault="1" showInWebsite="0" showInStore="1">
                 <label>New Order</label>
-                <fieldset_css>admin-email-custom-css</fieldset_css>
                 <field id="config_new_order_receiver" translate="label comment" type="text" sortOrder="60" showInDefault="1" showInWebsite="0" showInStore="1">
                     <label>Send To</label>
                     <frontend_model>Magenest\EmailNotifications\Block\Adminhtml\Form\Field\Mail</frontend_model>
@@ -38,7 +35,6 @@
 
             <group id="config_group_new_wishlist" translate="label" type="text" sortOrder="30" showInDefault="1" showInWebsite="0" showInStore="1">
                 <label>New Wishlist</label>
-                <fieldset_css>admin-email-custom-css</fieldset_css>
                 <field id="config_new_wishlist_receiver" translate="label comment" type="text" sortOrder="60" showInDefault="1" showInWebsite="0" showInStore="1">
                     <label>Send To</label>
                     <frontend_model>Magenest\EmailNotifications\Block\Adminhtml\Form\Field\Mail</frontend_model>
@@ -48,7 +44,7 @@
 
             <group id="config_group_new_coupon" translate="label" type="text" sortOrder="30" showInDefault="1" showInWebsite="0" showInStore="1">
                 <label>New Coupon Code used</label>
-                <fieldset_css>admin-email-custom-css</fieldset_css>
+
                 <field id="config_new_coupon_receiver" translate="label comment" type="text" sortOrder="60" showInDefault="1" showInWebsite="0" showInStore="1">
                     <label>Send To</label>
                     <frontend_model>Magenest\EmailNotifications\Block\Adminhtml\Form\Field\Mail</frontend_model>
@@ -68,7 +64,7 @@
 
             <group id="config_group_new_review" translate="label" type="text" sortOrder="80" showInDefault="1" showInWebsite="0" showInStore="1">
                 <label>New Product Review</label>
-                <fieldset_css>admin-email-custom-css</fieldset_css>
+
                 <field id="config_new_review_receiver" translate="label comment" type="text" sortOrder="60" showInDefault="1" showInWebsite="0" showInStore="1">
                     <label>Send To</label>
                     <frontend_model>Magenest\EmailNotifications\Block\Adminhtml\Form\Field\Mail</frontend_model>
@@ -79,7 +75,7 @@
 
             <group id="config_group_new_subscription" translate="label" type="text" sortOrder="150" showInDefault="1" showInWebsite="0" showInStore="1">
                 <label>Customer subscribed to Newsletter</label>
-                <fieldset_css>admin-email-custom-css</fieldset_css>
+
                 <field id="config_new_subscription_receiver" translate="label comment" type="text" sortOrder="60" showInDefault="1" showInWebsite="0" showInStore="1">
                     <label>Send To</label>
                     <frontend_model>Magenest\EmailNotifications\Block\Adminhtml\Form\Field\Mail</frontend_model>
@@ -89,7 +85,6 @@
 
             <group id="config_group_new_unsubscription" translate="label" type="text" sortOrder="150" showInDefault="1" showInWebsite="0" showInStore="1">
                 <label>Customer unsubscribed to Newsletter</label>
-                <fieldset_css>admin-email-custom-css</fieldset_css>
                 <field id="config_new_unsubscription_receiver" translate="label comment" type="text" sortOrder="60" showInDefault="1" showInWebsite="0" showInStore="1">
                     <label>Send To</label>
                     <frontend_model>Magenest\EmailNotifications\Block\Adminhtml\Form\Field\Mail</frontend_model>
@@ -99,7 +94,6 @@
 
             <group id="config_group_new_orderstatus" translate="label" type="text" sortOrder="270" showInDefault="1" showInWebsite="0" showInStore="1">
                 <label>Order Status Change</label>
-                <fieldset_css>admin-email-custom-css</fieldset_css>
                 <field id="config_new_orderstatus_receiver" translate="label comment" type="text" sortOrder="60" showInDefault="1" showInWebsite="0" showInStore="1">
                     <label>Send To</label>
                     <frontend_model>Magenest\EmailNotifications\Block\Adminhtml\Form\Field\Status</frontend_model>

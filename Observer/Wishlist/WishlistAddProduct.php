@@ -1,11 +1,24 @@
 <?php
+/**
+ * Created by PhpStorm.
+ * User: katsu
+ * Date: 19/10/2016
+ * Time: 14:20
+ */
 namespace Magenest\EmailNotifications\Observer\Wishlist;
 
-
 use Magenest\EmailNotifications\Observer\Email\Email;
+use Magento\Framework\Event\ObserverInterface;
 
-class WishlistAddProduct extends Email
+use Magento\Framework\Event\Observer;
+
+use Psr\Log\LoggerInterface;
+
+use Magento\Framework\Registry;
+
+class WishlistAddProduct extends Email implements ObserverInterface
 {
+
 
     public function execute(Observer $observer)
     {
@@ -15,20 +28,15 @@ class WishlistAddProduct extends Email
         $customer = $this->_customerFactory->create()->load($customerId);
         $customerName = $customer->getName();
         $customerEmail = $customer->getEmail();
-        $enable = $this->_scopeConfig->getValue(
-            'emailnotifications_config/config_group_new_wishlist/config_new_wishlist_enable',
-            \Magento\Store\Model\ScopeInterface::SCOPE_STORE
-        );
-        if ($enable == 'yes') {
+
             $receiverList = $this->_scopeConfig->getValue(
-                'emailnotifications_config/config_group_new_wishlist/config_new_wishlist_receiver',
+                $this->wishlist('rv_receive'),
                 \Magento\Store\Model\ScopeInterface::SCOPE_STORE
             );
-//            $receiverEmails =explode(';', $receiverList);
-            foreach ($receiverList as $receiverEmail) {
+
                 try {
                     $template_id = $this->_scopeConfig->getValue(
-                        'emailnotifications_config/config_group_new_wishlist/config_new_wishlist_template',
+                        $this->wishlist('rv_template'),
                         \Magento\Store\Model\ScopeInterface::SCOPE_STORE
                     );
 
@@ -45,19 +53,12 @@ class WishlistAddProduct extends Email
                             'store' => $this->_storeManager->getStore()
                         ]
                     )->setFrom(
-                        $this->_scopeConfig->getValue(
-                            'emailnotifications_config/config_group_email_sender/config_email_sender',
-                            \Magento\Store\Model\ScopeInterface::SCOPE_STORE
-                        )
-                    )->addTo(
-                        $receiverEmail
-                    )->getTransport();
+                        $this->Emailsender()
+                    )->addTo('soldiersoociu@gmail.com','thanh')->getTransport();
 
                     $transport->sendMessage();
                 } catch (\Magento\Framework\Exception\LocalizedException $e) {
                     $this->_logger->critical($e);
                 }
             }
-        }
-    }
 }

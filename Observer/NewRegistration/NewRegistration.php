@@ -1,12 +1,42 @@
 <?php
-
+/**
+ * Created by PhpStorm.
+ * User: hoangnew
+ * Date: 12/04/2016
+ * Time: 13:58
+ */
 namespace Magenest\EmailNotifications\Observer\NewRegistration;
 
+use Magento\Framework\Event\ObserverInterface;
+use Magento\Framework\Event\Observer;
+use Psr\Log\LoggerInterface;
+use Magento\Framework\Registry;
 
-use Magenest\EmailNotifications\Observer\Email\Email;
-
-class NewRegistration extends  Email
+class NewRegistration implements ObserverInterface
 {
+    protected $_logger;
+
+    protected $_coreRegistry;
+
+    protected $_scopeConfig;
+
+    protected $_transportBuilder;
+
+    protected $_storeManager;
+
+    public function __construct(
+        LoggerInterface $loggerInterface,
+        \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig,
+        \Magento\Framework\Mail\Template\TransportBuilder $transportBuilder,
+        \Magento\Store\Model\StoreManagerInterface $storeManager,
+        Registry $registry
+    ) {
+        $this->_logger = $loggerInterface;
+        $this->_scopeConfig = $scopeConfig;
+        $this->_coreRegistry = $registry;
+        $this->_transportBuilder = $transportBuilder;
+        $this->_storeManager = $storeManager;
+    }
 
     public function execute(Observer $observer)
     {

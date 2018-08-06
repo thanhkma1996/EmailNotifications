@@ -9,7 +9,7 @@
     <observers>
         <modulename>
             <type>singleton</type>
-            <class>emailnotifications/observer/saveconfig/saveconfig</class>
+            <class>emailnotificationss/observer/saveconfig/saveconfig</class>
             <method>observersection</method>
         </modulename>
     </observers>

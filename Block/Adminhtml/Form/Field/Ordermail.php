@@ -6,44 +6,48 @@
 
 namespace Magenest\EmailNotifications\Block\Adminhtml\Form\Field;
 
-class OrderStatus extends \Magento\Framework\View\Element\Html\Select
+class Ordermail extends \Magento\Framework\View\Element\Html\Select
 {
     /**
-     * @var \Magento\Sales\Model\ResourceModel\Order\Status\CollectionFactory $statusCollectionFactory
+     * @var \Magento\Sales\Model\ResourceModel\Order\Status\CollectionFactory $templatesFactory
      */
-    protected $statusCollectionFactory;
+    protected $templatesFactory;
 
     /**
      * OrderStatus constructor.
      * @param \Magento\Framework\View\Element\Context $context
-     * @param \Magento\Sales\Model\ResourceModel\Order\Status\CollectionFactory $statusCollectionFactory
+     * @param \Magento\Email\Model\ResourceModel\Template\CollectionFactory $templatesFactory,
      * @param array $data
      */
     public function __construct(
         \Magento\Framework\View\Element\Context $context,
-        \Magento\Sales\Model\ResourceModel\Order\Status\CollectionFactory $statusCollectionFactory,
+        \Magento\Email\Model\ResourceModel\Template\CollectionFactory $templatesFactory,
         array $data = []
     ) {
         parent::__construct($context, $data);
-        $this->statusCollectionFactory = $statusCollectionFactory;
+        $this->templatesFactory = $templatesFactory;
     }
 
     /**
-     * @param string $value
-     * @return $this
+     * @param $value
+     * @return mixed
      */
+
     public function setInputName($value)
     {
         return $this->setName($value);
     }
 
+
     /**
+     * Render block HTML
+     *
      * @return string
      */
     public function _toHtml()
     {
         if (!$this->getOptions()) {
-            $options = $this->statusCollectionFactory->create()->toOptionArray();
+            $options = $this->templatesFactory->create()->toOptionArray();
             foreach ($options as $option) {
                 $this->addOption($option['value'], $option['label']);
             }

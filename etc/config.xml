@@ -28,16 +28,10 @@
             </config_group_new_subscription>
 
             <config_group_new_orderstatus>
-                <config_new_orderstatus_template1>emailnotifications_config_config_group_new_orderstatus_config_new_orderstatus_template1</config_new_orderstatus_template1>
+                <config_new_orderstatus_template>emailnotifications_config_config_group_new_orderstatus_config_new_orderstatus_template</config_new_orderstatus_template>
             </config_group_new_orderstatus>
 
-            <config_group_new_orderstatus>
-                <config_new_orderstatus_template2>emailnotifications_config_config_group_new_orderstatus_config_new_orderstatus_template2</config_new_orderstatus_template2>
-            </config_group_new_orderstatus>
 
-            <config_group_new_orderstatus>
-                <config_new_orderstatus_template3>emailnotifications_config_config_group_new_orderstatus_config_new_orderstatus_template3</config_new_orderstatus_template3>
-            </config_group_new_orderstatus>
         </emailnotifications_config>
     </default>
 </config>

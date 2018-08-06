@@ -7,13 +7,16 @@
  */
 namespace Magenest\EmailNotifications\Observer\NewReview;
 
+use Magento\Framework\Event\ObserverInterface;
 
-
+use Magento\Framework\Event\Observer;
 use Magenest\EmailNotifications\Observer\Email\Email;
+use Psr\Log\LoggerInterface;
 
-class NewReview extends Email
+use Magento\Framework\Registry;
+
+class NewReview extends Email implements ObserverInterface
 {
-
 
     public function execute(Observer $observer)
     {
@@ -27,20 +30,14 @@ class NewReview extends Email
         $productId = $reviewModel->load($reviewId)->getEntityPkValue();
         $nickname = $reviewModel->load($reviewId)->getNickname();
 
-        $enable = $this->_scopeConfig->getValue(
-            'emailnotifications_config/config_group_new_review/config_new_review_enable',
-            \Magento\Store\Model\ScopeInterface::SCOPE_STORE
-        );
-        if ($enable == 'yes') {
-            $receiverList = $this->_scopeConfig->getValue(
-                'emailnotifications_config/config_group_new_review/config_new_review_receiver',
+        $receiverList = $this->_scopeConfig->getValue(
+            $this->newreview('rv_receive'),
                 \Magento\Store\Model\ScopeInterface::SCOPE_STORE
             );
-//            $receiverEmails =explode(';', $receiverList);
-            foreach ($receiverList as $receiverEmail) {
+
                 try {
                     $template_id = $this->_scopeConfig->getValue(
-                        'emailnotifications_config/config_group_new_review/config_new_review_template',
+                        $this->newreview('rv_template'),
                         \Magento\Store\Model\ScopeInterface::SCOPE_STORE
                     );
 
@@ -58,18 +55,14 @@ class NewReview extends Email
                             'detail' => $detail
                         ]
                     )->setFrom(
-                        $this->_scopeConfig->getValue(
-                            'emailnotifications_config/config_group_email_sender/config_email_sender',
-                            \Magento\Store\Model\ScopeInterface::SCOPE_STORE
-                        )
+                       $this->Emailsender()
+
                     )->addTo(
-                        $receiverEmail
+                       'nguyendinhthanhkma@gmail.com'
                     )->getTransport();
                     $transport->sendMessage();
                 } catch (\Magento\Framework\Exception\LocalizedException $e) {
                     $this->_logger->critical($e);
                 }
             }
-        }
-    }
 }
