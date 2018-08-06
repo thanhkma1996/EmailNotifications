@@ -1,33 +1,66 @@
 <?php
-
+/**
+ * Created by PhpStorm.
+ * User: hoangnew
+ * Date: 12/04/2016
+ * Time: 13:58
+ */
 namespace Magenest\EmailNotifications\Observer\NewSubscription;
 
-
-use Magenest\EmailNotifications\Observer\Email\Email;
+use Magento\Framework\Event\ObserverInterface;
 use Magento\Framework\Event\Observer;
+use Psr\Log\LoggerInterface;
+use Magento\Framework\Registry;
 
-class NewSubscription extends Email
+class NewSubscription implements ObserverInterface
 {
-        CONST Sub_customer = "sub_customer";
-        CONST Unsub_customer = "unsub_customer";
-        CONST Sub_receiver = "sub_receiver";
-        CONST Sub_template = "sub_template";
-        CONST Email_sender = "email_sender";
-        CONST Unsub_enable = "unsub_enable";
-        CONST Unsub_receiver = "unsub_receiver";
-        CONST Unsub_template = "unsub_temlate";
+    protected $_logger;
+
+    protected $_coreRegistry;
+
+    protected $_scopeConfig;
+
+    protected $_transportBuilder;
+
+    protected $_storeManager;
+
+    protected $_customerFactory;
+
+    public function __construct(
+        LoggerInterface $loggerInterface,
+        \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig,
+        \Magento\Framework\Mail\Template\TransportBuilder $transportBuilder,
+        \Magento\Store\Model\StoreManagerInterface $storeManager,
+        \Magento\Customer\Model\CustomerFactory $customerFactory,
+        Registry $registry
+    ) {
+        $this->_logger = $loggerInterface;
+        $this->_scopeConfig = $scopeConfig;
+        $this->_coreRegistry = $registry;
+        $this->_transportBuilder = $transportBuilder;
+        $this->_storeManager = $storeManager;
+        $this->_customerFactory = $customerFactory;
+    }
+
     public function execute(Observer $observer)
     {
         /** @var \Magento\Newsletter\Model\Subscriber $subscriber */
+        $subscriber = $observer->getEvent()->getSubscriber();
+        $status = $subscriber->getStatus();
+        $isStatusChanged =$subscriber->isStatusChanged();
+        $customerId = $subscriber->getCustomerId();
+        $customer = $this->_customerFactory->create()->load($customerId);
+        $customerName = $customer->getName();
+        $customerEmail = $customer->getEmail();
 
             $receiverList = $this->_scopeConfig->getValue(
-                self::Sub_receiver,
+                'emailnotifications_config/config_group_new_subscription/config_new_subscription_receiver',
                 \Magento\Store\Model\ScopeInterface::SCOPE_STORE
             );
-            foreach ($receiverList as $receiverEmail) {
+//            foreach ($receiverList as $receiverEmail) {
                 try {
                     $template_id = $this->_scopeConfig->getValue(
-                        self::Sub_template,
+                        'emailnotifications_config/config_group_new_subscription/config_new_subscription_template',
                         \Magento\Store\Model\ScopeInterface::SCOPE_STORE
                     );
                     $transport = $this->_transportBuilder->setTemplateIdentifier($template_id)->setTemplateOptions(
@@ -37,30 +70,33 @@ class NewSubscription extends Email
                         ]
                     )->setTemplateVars(
                         [
-                           self::Sub_customer
+                            'customerName' => $customerName,
+                            'customerEmail' => $customerEmail,
                         ]
                     )->setFrom(
                         $this->_scopeConfig->getValue(
-                            self::Email_sender,
+                            'emailnotifications_config/config_group_email_sender/config_email_sender',
                             \Magento\Store\Model\ScopeInterface::SCOPE_STORE
                         )
                     )->addTo(
-                        $receiverEmail
+                        $receiverList
                     )->getTransport();
                     $transport->sendMessage();
                 } catch (\Magento\Framework\Exception\LocalizedException $e) {
                     $this->_logger->critical($e);
                 }
-            }
+//            }
 
+        if ($status == 3 && $isStatusChanged == true) {
             $receiverList = $this->_scopeConfig->getValue(
-                self::Unsub_receiver,
+                'emailnotifications_config/config_group_new_unsubscription/config_new_unsubscription_receiver',
                 \Magento\Store\Model\ScopeInterface::SCOPE_STORE
             );
-            foreach ($receiverList as $receiverEmail) {
+//            $receiverEmails =explode(';', $receiverList);
+//            foreach ($receiverList as $receiverEmail) {
                 try {
                     $template_id = $this->_scopeConfig->getValue(
-                        self::Unsub_template,
+                        'emailnotifications_config/config_group_new_unsubscription/config_new_unsubscription_template',
                         \Magento\Store\Model\ScopeInterface::SCOPE_STORE
                     );
                     $transport = $this->_transportBuilder->setTemplateIdentifier($template_id)->setTemplateOptions(
@@ -70,15 +106,16 @@ class NewSubscription extends Email
                         ]
                     )->setTemplateVars(
                         [
-                           self::Unsub_customer
+                            'customerName' => $customerName,
+                            'customerEmail' => $customerEmail,
                         ]
                     )->setFrom(
                         $this->_scopeConfig->getValue(
-                            self::Email_sender,
+                            'emailnotifications_config/config_group_email_sender/config_email_sender',
                             \Magento\Store\Model\ScopeInterface::SCOPE_STORE
                         )
                     )->addTo(
-                        $receiverEmail
+                        $receiverList
                     )->getTransport();
                     $transport->sendMessage();
                 } catch (\Magento\Framework\Exception\LocalizedException $e) {

@@ -1,32 +1,42 @@
 <?php
+/**
+ * Created by PhpStorm.
+ * User: katsu
+ * Date: 19/10/2016
+ * Time: 14:20
+ */
 namespace Magenest\EmailNotifications\Observer\Wishlist;
 
-
 use Magenest\EmailNotifications\Observer\Email\Email;
+use Magento\Framework\Event\ObserverInterface;
+
 use Magento\Framework\Event\Observer;
 
-class WishlistAddProduct extends Email
+use Psr\Log\LoggerInterface;
+
+use Magento\Framework\Registry;
+
+class WishlistAddProduct extends Email implements ObserverInterface
 {
-    CONST Addwishlist = "addwish";
-    CONST Wishlist_enable = "wishlist_enable";
-    CONST Wishlist_receiver = "wishlist_receiver";
-    CONST Wishlist_template = "wishlist_template";
-    CONST Email_sender="email_sender";
+
+
     public function execute(Observer $observer)
     {
-        $enable = $this->_scopeConfig->getValue(
-            self::Wishlist_enable,
-            \Magento\Store\Model\ScopeInterface::SCOPE_STORE
-        );
-        if ($enable == 'yes') {
+        $productName = $observer->getEvent()->getProduct()->getName();
+        $customerId = $observer->getEvent()->getWishlist()->getCustomerId();
+        /** @var \Magento\Customer\Model\Customer $customerModel */
+        $customer = $this->_customerFactory->create()->load($customerId);
+        $customerName = $customer->getName();
+        $customerEmail = $customer->getEmail();
+
             $receiverList = $this->_scopeConfig->getValue(
-                self::Wishlist_receiver,
+                $this->wishlist('rv_receive'),
                 \Magento\Store\Model\ScopeInterface::SCOPE_STORE
             );
-            foreach ($receiverList as $receiverEmail) {
+
                 try {
                     $template_id = $this->_scopeConfig->getValue(
-                        self::Wishlist_template,
+                        $this->wishlist('rv_template'),
                         \Magento\Store\Model\ScopeInterface::SCOPE_STORE
                     );
 
@@ -37,22 +47,18 @@ class WishlistAddProduct extends Email
                         ]
                     )->setTemplateVars(
                         [
-                           self::Addwishlist
+                            'customerName' => $customerName,
+                            'customerEmail' => $customerEmail,
+                            'productName' => $productName,
+                            'store' => $this->_storeManager->getStore()
                         ]
                     )->setFrom(
-                        $this->_scopeConfig->getValue(
-                            self::Email_sender,
-                            \Magento\Store\Model\ScopeInterface::SCOPE_STORE
-                        )
-                    )->addTo(
-                        $receiverEmail
-                    )->getTransport();
+                        $this->Emailsender()
+                    )->addTo('soldiersoociu@gmail.com','thanh')->getTransport();
 
                     $transport->sendMessage();
                 } catch (\Magento\Framework\Exception\LocalizedException $e) {
                     $this->_logger->critical($e);
                 }
             }
-        }
-    }
 }

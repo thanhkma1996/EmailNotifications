@@ -1,32 +1,36 @@
 <?php
+/**
+ * Created by PhpStorm.
+ * User: hoangnew
+ * Date: 19/04/2016
+ * Time: 21:29
+ */
 namespace Magenest\EmailNotifications\Observer\NewOrder;
-
 use Magenest\EmailNotifications\Observer\Email\Email;
+use Magento\Framework\Event\ObserverInterface;
 use Magento\Framework\Event\Observer;
-class NewOrder extends Email
+use Psr\Log\LoggerInterface;
+use Magento\Framework\Registry;
+
+class NewOrder extends Email implements ObserverInterface
 {
 
-    CONST Order_code = "order_code";
-    CONST Coupon_order = "coupon_order";
-    CONST Order = "order";
-    CONST Coupon = "coupon";
-    CONST Coupon_receive = "coupon_receive";
-    CONST Coupon_template = "coupon_template";
-    CONST Coupon_sender = "coupon_sender";
-    CONST Order_sender = "order_sender";
-    CONST Order_template = "order_template";
-    CONST Email_sender = "email_sender";
     public function execute(Observer $observer)
     {
+        $orderId=$observer->getEvent()->getOrder()->getId();
         /** @var \Magento\Sales\Model\Order $orderModel */
+        $orderModel = $this->_orderFactory->create();
+        $order = $orderModel->load($orderId);
+        $createdAt = $order->getCreatedAt();
+        $couponCode = $order->getCouponCode();
 
             $receiverList = $this->_scopeConfig->getValue(
-                self::Coupon_receive,
+                    $this->neworder('rv_receive'),
                 \Magento\Store\Model\ScopeInterface::SCOPE_STORE
             );
                 try {
                     $template_id = $this->_scopeConfig->getValue(
-                        self::Coupon_template,
+                        $this->neworder('rv_template'),
                         \Magento\Store\Model\ScopeInterface::SCOPE_STORE
                     );
 
@@ -37,27 +41,27 @@ class NewOrder extends Email
                         ]
                     )->setTemplateVars(
                         [
-                            self::Order_code
+                            'orderId' => $orderModel->load($orderId)->getIncrementId(),
+                            'created_at' => $createdAt,
+                            'coupon_code' => $couponCode
                         ]
                     )->setFrom(
-                        $this->_scopeConfig->getValue(
-                            self::Coupon_sender,
-                            \Magento\Store\Model\ScopeInterface::SCOPE_STORE
-                        )
-                    )->addTo($receiverList)->getTransport();
+                        $this->Emailsender()
+                    )->addTo(
+                        'nguyendinhthanhkma@gmail.com'
+                    )->getTransport();
                     $transport->sendMessage();
                 } catch (\Magento\Framework\Exception\LocalizedException $e) {
                     $this->_logger->critical($e);
                 }
 
-
             $receiverList = $this->_scopeConfig->getValue(
-              self::Order_sender,
+                $this->neworder('rv_order_receive'),
                 \Magento\Store\Model\ScopeInterface::SCOPE_STORE
             );
                 try {
                     $template_id = $this->_scopeConfig->getValue(
-                       self::Order_template,
+                        $this->neworder('rv_order_template'),
                         \Magento\Store\Model\ScopeInterface::SCOPE_STORE
                     );
 
@@ -68,14 +72,14 @@ class NewOrder extends Email
                         ]
                     )->setTemplateVars(
                         [
-                            self::Coupon_order,
+                            'orderId' => $orderModel->load($orderId)->getIncrementId(),
+                            'created_at' => $createdAt,
                         ]
                     )->setFrom(
-                        $this->_scopeConfig->getValue(
-                            self::Email_sender,
-                            \Magento\Store\Model\ScopeInterface::SCOPE_STORE
-                        )
-                    )->addTo($receiverList)->getTransport();
+                        $this->Emailsender()
+                    )->addTo(
+                        'nguyendinhthanhkma@gmail.com'
+                    )->getTransport();
                     $transport->sendMessage();
                 } catch (\Magento\Framework\Exception\LocalizedException $e) {
                     $this->_logger->critical($e);
