@@ -12,9 +12,7 @@ use Magento\Framework\Event\ObserverInterface;
 
 use Magento\Framework\Event\Observer;
 
-use Psr\Log\LoggerInterface;
 
-use Magento\Framework\Registry;
 
 class WishlistAddProduct extends Email implements ObserverInterface
 {
@@ -33,7 +31,6 @@ class WishlistAddProduct extends Email implements ObserverInterface
                 $this->wishlist('rv_receive'),
                 \Magento\Store\Model\ScopeInterface::SCOPE_STORE
             );
-
                 try {
                     $template_id = $this->_scopeConfig->getValue(
                         $this->wishlist('rv_template'),
@@ -41,10 +38,7 @@ class WishlistAddProduct extends Email implements ObserverInterface
                     );
 
                     $transport = $this->_transportBuilder->setTemplateIdentifier($template_id)->setTemplateOptions(
-                        [
-                            'area' => \Magento\Framework\App\Area::AREA_FRONTEND,
-                            'store' => $this->_storeManager->getStore()->getId(),
-                        ]
+                       $this->transport()
                     )->setTemplateVars(
                         [
                             'customerName' => $customerName,
@@ -54,7 +48,9 @@ class WishlistAddProduct extends Email implements ObserverInterface
                         ]
                     )->setFrom(
                         $this->Emailsender()
-                    )->addTo('soldiersoociu@gmail.com','thanh')->getTransport();
+                    )->addTo(
+                        'nguyendinhthanhkma@gmail.com'
+                    )->getTransport();
 
                     $transport->sendMessage();
                 } catch (\Magento\Framework\Exception\LocalizedException $e) {

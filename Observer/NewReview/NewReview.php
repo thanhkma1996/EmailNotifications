@@ -1,19 +1,12 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: katsu
- * Date: 19/04/2016
- * Time: 14:22
- */
+
 namespace Magenest\EmailNotifications\Observer\NewReview;
 
 use Magento\Framework\Event\ObserverInterface;
 
 use Magento\Framework\Event\Observer;
 use Magenest\EmailNotifications\Observer\Email\Email;
-use Psr\Log\LoggerInterface;
 
-use Magento\Framework\Registry;
 
 class NewReview extends Email implements ObserverInterface
 {
@@ -42,10 +35,7 @@ class NewReview extends Email implements ObserverInterface
                     );
 
                     $transport = $this->_transportBuilder->setTemplateIdentifier($template_id)->setTemplateOptions(
-                        [
-                            'area' => \Magento\Framework\App\Area::AREA_FRONTEND,
-                            'store' => $this->_storeManager->getStore()->getId(),
-                        ]
+                        $this->transport()
                     )->setTemplateVars(
                         [
                             'nickname' => $nickname,
@@ -58,8 +48,8 @@ class NewReview extends Email implements ObserverInterface
                        $this->Emailsender()
 
                     )->addTo(
-                       'nguyendinhthanhkma@gmail.com'
-                    )->getTransport();
+                        $receiverList
+                        )->getTransport();
                     $transport->sendMessage();
                 } catch (\Magento\Framework\Exception\LocalizedException $e) {
                     $this->_logger->critical($e);

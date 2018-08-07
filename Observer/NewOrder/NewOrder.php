@@ -9,11 +9,11 @@ namespace Magenest\EmailNotifications\Observer\NewOrder;
 use Magenest\EmailNotifications\Observer\Email\Email;
 use Magento\Framework\Event\ObserverInterface;
 use Magento\Framework\Event\Observer;
-use Psr\Log\LoggerInterface;
-use Magento\Framework\Registry;
+
 
 class NewOrder extends Email implements ObserverInterface
 {
+
 
     public function execute(Observer $observer)
     {
@@ -25,9 +25,10 @@ class NewOrder extends Email implements ObserverInterface
         $couponCode = $order->getCouponCode();
 
             $receiverList = $this->_scopeConfig->getValue(
-                    $this->neworder('rv_receive'),
+                $this->neworder('rv_receive'),
                 \Magento\Store\Model\ScopeInterface::SCOPE_STORE
             );
+
                 try {
                     $template_id = $this->_scopeConfig->getValue(
                         $this->neworder('rv_template'),
@@ -35,10 +36,7 @@ class NewOrder extends Email implements ObserverInterface
                     );
 
                     $transport = $this->_transportBuilder->setTemplateIdentifier($template_id)->setTemplateOptions(
-                        [
-                            'area' => \Magento\Framework\App\Area::AREA_FRONTEND,
-                            'store' => $this->_storeManager->getStore()->getId(),
-                        ]
+                        $this->transport()
                     )->setTemplateVars(
                         [
                             'orderId' => $orderModel->load($orderId)->getIncrementId(),
@@ -46,7 +44,7 @@ class NewOrder extends Email implements ObserverInterface
                             'coupon_code' => $couponCode
                         ]
                     )->setFrom(
-                        $this->Emailsender()
+                                $this->Emailsender()
                     )->addTo(
                         'nguyendinhthanhkma@gmail.com'
                     )->getTransport();
@@ -59,6 +57,7 @@ class NewOrder extends Email implements ObserverInterface
                 $this->neworder('rv_order_receive'),
                 \Magento\Store\Model\ScopeInterface::SCOPE_STORE
             );
+
                 try {
                     $template_id = $this->_scopeConfig->getValue(
                         $this->neworder('rv_order_template'),
@@ -85,5 +84,4 @@ class NewOrder extends Email implements ObserverInterface
                     $this->_logger->critical($e);
                 }
             }
-
 }
